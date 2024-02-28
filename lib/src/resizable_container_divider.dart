@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+typedef DividerBuilder = Widget Function(
+  BuildContext context,
+  double dividerWidth,
+);
+
 class ResizableContainerDivider extends StatelessWidget {
   const ResizableContainerDivider({
     super.key,
@@ -7,12 +12,14 @@ class ResizableContainerDivider extends StatelessWidget {
     required this.onResizeUpdate,
     required this.dividerWidth,
     required this.dividerColor,
+    required this.dividerBuilder,
   });
 
   final Axis direction;
   final void Function(double) onResizeUpdate;
   final double dividerWidth;
   final Color dividerColor;
+  final DividerBuilder? dividerBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +32,12 @@ class ResizableContainerDivider extends StatelessWidget {
         onHorizontalDragUpdate: direction == Axis.horizontal
             ? (details) => onResizeUpdate(details.delta.dx)
             : null,
-        child: _Divider(
-          direction: direction,
-          width: dividerWidth,
-          color: dividerColor,
-        ),
+        child: dividerBuilder?.call(context, dividerWidth) ??
+            _Divider(
+              direction: direction,
+              width: dividerWidth,
+              color: dividerColor,
+            ),
       ),
     );
   }
